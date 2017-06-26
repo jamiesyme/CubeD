@@ -8,6 +8,7 @@ namespace sf {
 }
 
 class GameSettings;
+class SystemEvent;
 class UserPlayerController;
 class World;
 
@@ -17,7 +18,9 @@ public:
 
 	~SinglePlayerScreen();
 
-	void onEvent(const sf::Event& event);
+	void onEvent(const SystemEvent& systemEvent);
+
+	void tick(float deltaTime);
 
 	void render(sf::Window& window);
 

@@ -2,6 +2,7 @@
 
 #include "game.hpp"
 #include "single-player-screen.hpp"
+#include "system-event.hpp"
 #include "world.hpp"
 
 GameSettings::GameSettings()
@@ -13,6 +14,7 @@ Game::Game()
 	: window(new sf::RenderWindow(sf::VideoMode(1920, 1080),
 	                              "CubeD",
 	                              sf::Style::None)),
+	  clock(new sf::Clock()),
 	  world(new World()),
 	  singlePlayerScreen(new SinglePlayerScreen(this->settings, *this->world))
 {
@@ -25,9 +27,9 @@ void Game::mainLoop()
 {
 	while (this->window->isOpen())
 	{
-		sf::Event event;
-		while (this->window->pollEvent(event)) {
-			switch (event.type) {
+		SystemEvent systemEvent;
+		while (this->window->pollEvent(systemEvent.sfEvent)) {
+			switch (systemEvent.sfEvent.type) {
 			case sf::Event::Closed:
 				this->window->close();
 				break;
@@ -38,13 +40,18 @@ void Game::mainLoop()
 			case sf::Event::MouseButtonReleased:
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseWheelMoved:
-				this->singlePlayerScreen->onEvent(event);
+				this->singlePlayerScreen->onEvent(systemEvent);
 				break;
 
 			default:
 				break;
 			}
+			systemEvent = SystemEvent();
 		}
+
+		float deltaTime = this->clock->getElapsedTime().asSeconds();
+		this->clock->restart();
+		this->singlePlayerScreen->tick(deltaTime);
 
 		this->window->clear();
 		//this->window->pushGLStates();

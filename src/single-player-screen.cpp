@@ -3,6 +3,7 @@
 #include <glm/vec3.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
+#include <SFML/System/Time.hpp>
 
 #include "game.hpp"
 #include "player.hpp"
@@ -15,14 +16,19 @@ SinglePlayerScreen::SinglePlayerScreen(GameSettings& gameSettings, World& world)
 	  world(world),
 	  userPlayerController(new UserPlayerController(world.createPlayer()))
 {
-	this->userPlayerController->player.position = glm::vec3(0.f, 0.f, -10.f);
+	this->userPlayerController->player.position = glm::vec3(0.f, 0.f, 10.f);
 }
 
 SinglePlayerScreen::~SinglePlayerScreen() = default;
 
-void SinglePlayerScreen::onEvent(const sf::Event& event)
+void SinglePlayerScreen::onEvent(const SystemEvent& systemEvent)
 {
-	this->userPlayerController->onEvent(event);
+	this->userPlayerController->onEvent(systemEvent);
+}
+
+void SinglePlayerScreen::tick(float deltaTime)
+{
+	this->userPlayerController->tick(deltaTime);
 }
 
 void SinglePlayerScreen::render(sf::Window& window)
@@ -43,22 +49,12 @@ void SinglePlayerScreen::render(sf::Window& window)
 	                                     cameraNear,
 	                                     cameraFar);
 	glm::mat4 viewMat;
-	viewMat = glm::rotate(viewMat, cameraRotY, glm::vec3(0.f, 1.f, 0.f));
-	viewMat = glm::rotate(viewMat, cameraRotX, glm::vec3(1.f, 0.f, 0.f));
-	viewMat = glm::translate(viewMat, cameraPos);
+	viewMat = glm::rotate(viewMat, -cameraRotX, glm::vec3(1.f, 0.f, 0.f));
+	viewMat = glm::rotate(viewMat, -cameraRotY, glm::vec3(0.f, 1.f, 0.f));
+	viewMat = glm::translate(viewMat, -cameraPos);
 	glLoadIdentity();
 	glMultMatrixf(&(projMat * viewMat)[0][0]);
 
 	// Render the world
 	this->world.render();
-	static float diffY = 0.004f;
-	player.rotateY(diffY);
-	if (player.getRotationY() <= -45.0f || player.getRotationY() >= 45.0f) {
-		diffY *= -1.f;
-	}
-	static float diffX = 0.004f;
-	player.rotateX(diffX);
-	if (player.getRotationX() <= -30.0f || player.getRotationX() >= 30.0f) {
-		diffX *= -1.f;
-	}
 }

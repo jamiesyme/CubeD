@@ -3,6 +3,7 @@
 #include <memory>
 
 namespace sf {
+	class Clock;
 	class RenderWindow;
 }
 
@@ -12,7 +13,7 @@ class World;
 class GameSettings {
 public:
 	GameSettings();
-	
+
 	float fov;
 };
 
@@ -27,6 +28,7 @@ public:
 private:
 	GameSettings settings;
 	std::unique_ptr<sf::RenderWindow> window;
+	std::unique_ptr<sf::Clock> clock;
 	std::unique_ptr<World> world;
 	std::unique_ptr<SinglePlayerScreen> singlePlayerScreen;
 };

@@ -1,16 +1,24 @@
 #pragma once
 
-namespace sf {
-	class Event;
-}
-
 class Player;
+class SystemEvent;
 
 class UserPlayerController {
 public:
 	UserPlayerController(Player& player);
 
-	void onEvent(const sf::Event& event);
+	void onEvent(const SystemEvent& systemEvent);
+
+	void tick(float deltaTime);
 
 	Player& player;
+	float lookSpeedX;
+	float lookSpeedY;
+	float moveSpeedX;
+	float moveSpeedY;
+	float moveSpeedZ;
+
+private:
+	int previousMouseX;
+	int previousMouseY;
 };
