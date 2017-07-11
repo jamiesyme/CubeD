@@ -1,3 +1,5 @@
+#include <exception>
+#include <GL/glew.h>
 #include <SFML/Graphics.hpp>
 
 #include "game.hpp"
@@ -18,7 +20,11 @@ Game::Game()
 	  world(new World()),
 	  singlePlayerScreen(new SinglePlayerScreen(this->settings, *this->world))
 {
+	if (glewInit() != GLEW_OK) {
+		throw std::runtime_error("glew init failed");
+	}
 	this->window->setPosition(sf::Vector2i(100, 100));
+	this->world->generate();
 }
 
 Game::~Game() = default;

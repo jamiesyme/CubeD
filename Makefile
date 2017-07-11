@@ -1,6 +1,6 @@
 CXX=g++
 
-CUBED_LIBS=sfml-system sfml-window sfml-graphics gl
+CUBED_LIBS=sfml-system sfml-window sfml-graphics gl glew
 CUBED_CXXFLAGS=-Wall -std=c++17 $(shell pkg-config --cflags $(CUBED_LIBS))
 CUBED_LDFLAGS=$(shell pkg-config --libs $(CUBED_LIBS))
 CUBED_SOURCES=$(wildcard src/*.cpp)

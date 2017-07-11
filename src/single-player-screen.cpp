@@ -16,7 +16,8 @@ SinglePlayerScreen::SinglePlayerScreen(GameSettings& gameSettings, World& world)
 	  world(world),
 	  userPlayerController(new UserPlayerController(world.createPlayer()))
 {
-	this->userPlayerController->player.position = glm::vec3(0.f, 0.f, 10.f);
+	this->userPlayerController->player.position = glm::vec3(0.f, 0.f, -10.f);
+	this->userPlayerController->player.rotateY(180);
 }
 
 SinglePlayerScreen::~SinglePlayerScreen() = default;
