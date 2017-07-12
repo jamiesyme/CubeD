@@ -56,6 +56,11 @@ void SinglePlayerScreen::render(sf::Window& window)
 	glLoadIdentity();
 	glMultMatrixf(&(projMat * viewMat)[0][0]);
 
+	// Setup depth buffer and backface culling
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
 	// Render the world
 	this->world.render();
 }

@@ -7,6 +7,10 @@
 #include "system-event.hpp"
 #include "world.hpp"
 
+namespace {
+	static const unsigned int depthBits = 24;
+}
+
 GameSettings::GameSettings()
 {
 	this->fov = 60.f;
@@ -15,7 +19,8 @@ GameSettings::GameSettings()
 Game::Game()
 	: window(new sf::RenderWindow(sf::VideoMode(1920, 1080),
 	                              "CubeD",
-	                              sf::Style::None)),
+	                              sf::Style::None,
+	                              sf::ContextSettings(depthBits))),
 	  clock(new sf::Clock()),
 	  world(new World()),
 	  singlePlayerScreen(new SinglePlayerScreen(this->settings, *this->world))

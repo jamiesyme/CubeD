@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
 
@@ -13,6 +14,10 @@ namespace {
 		float x;
 		float y;
 		float z;
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		unsigned char padding;
 	};
 
 	struct Triangle {
@@ -28,19 +33,21 @@ ChunkMeshSystem::ChunkMeshSystem(World& world)
 void ChunkMeshSystem::render() const
 {
 	// Pre-render
-	glColor3f(1.0f, 1.0f, 1.0f);
 	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
 
 	// Render each chunk mesh
 	for (const auto& chunkMesh : this->chunkMeshes) {
 		glBindBuffer(GL_ARRAY_BUFFER, chunkMesh->vertexVboId);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunkMesh->indexVboId);
-		glVertexPointer(3, GL_FLOAT, 0, 0);
+		glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, x));
+		glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, r));
 		glDrawElements(GL_TRIANGLES, chunkMesh->indexCount, GL_UNSIGNED_INT, 0);
 	}
 
 	// Post-render
 	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
@@ -134,18 +141,105 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 					continue;
 				}
 
-				const float x1 = (float)x + blockSize / 4;
-				const float x2 = (float)x + blockSize * 3 / 4;
-				const float y1 = (float)y + blockSize / 4;
-				const float y2 = (float)y + blockSize * 3 / 4;
-				const float z1 = (float)z + blockSize / 2;
-				const uint32_t i = vertices.size();
-				vertices.push_back({x1, y1, z1});
-				vertices.push_back({x2, y1, z1});
-				vertices.push_back({x1, y2, z1});
-				vertices.push_back({x2, y2, z1});
-				triangles.push_back({i + 0, i + 1, i + 2});
-				triangles.push_back({i + 3, i + 2, i + 1});
+				const BlockId x1BlockId = chunkDataSystem.getBlockIdSafely(blockX - 1,
+				                                                           blockY,
+				                                                           blockZ);
+				const BlockId x2BlockId = chunkDataSystem.getBlockIdSafely(blockX + 1,
+				                                                           blockY,
+				                                                           blockZ);
+				const BlockId z1BlockId = chunkDataSystem.getBlockIdSafely(blockX,
+				                                                           blockY,
+				                                                           blockZ - 1);
+				const BlockId z2BlockId = chunkDataSystem.getBlockIdSafely(blockX,
+				                                                           blockY,
+				                                                           blockZ + 1);
+				const BlockId y1BlockId = chunkDataSystem.getBlockIdSafely(blockX,
+				                                                           blockY - 1,
+				                                                           blockZ);
+				const BlockId y2BlockId = chunkDataSystem.getBlockIdSafely(blockX,
+				                                                           blockY + 1,
+				                                                           blockZ);
+
+				const float x1 = (float)x * blockSize;// + blockSize / 4;
+				const float x2 = (float)x * blockSize + blockSize;// * 3 / 4;
+				const float y1 = (float)y * blockSize;// + blockSize / 4;
+				const float y2 = (float)y * blockSize + blockSize;// * 3 / 4;
+				const float z1 = (float)z * blockSize;// + blockSize / 4;
+				const float z2 = (float)z * blockSize + blockSize;// * 3 / 4;
+				uint32_t i;
+
+				if (x1BlockId == BlockId::Empty) {
+					const unsigned char r = 180;
+					const unsigned char g = 180;
+					const unsigned char b = 180;
+					i = vertices.size();
+					vertices.push_back({x1, y1, z1, r, g, b});
+					vertices.push_back({x1, y1, z2, r, g, b});
+					vertices.push_back({x1, y2, z2, r, g, b});
+					vertices.push_back({x1, y2, z1, r, g, b});
+					triangles.push_back({i + 0, i + 1, i + 2});
+					triangles.push_back({i + 2, i + 3, i + 0});
+				}
+				if (x2BlockId == BlockId::Empty) {
+					const unsigned char r = 180;
+					const unsigned char g = 180;
+					const unsigned char b = 180;
+					i = vertices.size();
+					vertices.push_back({x2, y1, z2, r, g, b});
+					vertices.push_back({x2, y1, z1, r, g, b});
+					vertices.push_back({x2, y2, z1, r, g, b});
+					vertices.push_back({x2, y2, z2, r, g, b});
+					triangles.push_back({i + 0, i + 1, i + 2});
+					triangles.push_back({i + 2, i + 3, i + 0});
+				}
+				if (z1BlockId == BlockId::Empty) {
+					const unsigned char r = 210;
+					const unsigned char g = 210;
+					const unsigned char b = 210;
+					i = vertices.size();
+					vertices.push_back({x2, y1, z1, r, g, b});
+					vertices.push_back({x1, y1, z1, r, g, b});
+					vertices.push_back({x1, y2, z1, r, g, b});
+					vertices.push_back({x2, y2, z1, r, g, b});
+					triangles.push_back({i + 0, i + 1, i + 2});
+					triangles.push_back({i + 2, i + 3, i + 0});
+				}
+				if (z2BlockId == BlockId::Empty) {
+					const unsigned char r = 210;
+					const unsigned char g = 210;
+					const unsigned char b = 210;
+					i = vertices.size();
+					vertices.push_back({x1, y1, z2, r, g, b});
+					vertices.push_back({x2, y1, z2, r, g, b});
+					vertices.push_back({x2, y2, z2, r, g, b});
+					vertices.push_back({x1, y2, z2, r, g, b});
+					triangles.push_back({i + 0, i + 1, i + 2});
+					triangles.push_back({i + 2, i + 3, i + 0});
+				}
+				if (y1BlockId == BlockId::Empty) {
+					const unsigned char r = 240;
+					const unsigned char g = 240;
+					const unsigned char b = 240;
+					i = vertices.size();
+					vertices.push_back({x2, y1, z2, r, g, b});
+					vertices.push_back({x1, y1, z2, r, g, b});
+					vertices.push_back({x1, y1, z1, r, g, b});
+					vertices.push_back({x2, y1, z1, r, g, b});
+					triangles.push_back({i + 0, i + 1, i + 2});
+					triangles.push_back({i + 2, i + 3, i + 0});
+				}
+				if (y2BlockId == BlockId::Empty) {
+					const unsigned char r = 240;
+					const unsigned char g = 240;
+					const unsigned char b = 240;
+					i = vertices.size();
+					vertices.push_back({x2, y2, z1, r, g, b});
+					vertices.push_back({x1, y2, z1, r, g, b});
+					vertices.push_back({x1, y2, z2, r, g, b});
+					vertices.push_back({x2, y2, z2, r, g, b});
+					triangles.push_back({i + 0, i + 1, i + 2});
+					triangles.push_back({i + 2, i + 3, i + 0});
+				}
 			}
 		}
 	}

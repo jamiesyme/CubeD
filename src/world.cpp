@@ -13,7 +13,7 @@ namespace {
 				for (uint32_t y = 0; y < chunkSize.y; ++y) {
 
 					const unsigned int index = ChunkData::getBlockIndex(x, y, z);
-					if (rand() % 30 == 0)
+					if (rand() % 70 == 0)
 						chunkData.blockIds[index] = BlockId::Solid;
 					else
 						chunkData.blockIds[index] = BlockId::Empty;
