@@ -16,8 +16,9 @@ SinglePlayerScreen::SinglePlayerScreen(GameSettings& gameSettings, World& world)
 	  world(world),
 	  userPlayerController(new UserPlayerController(world.createPlayer()))
 {
-	this->userPlayerController->player.position = glm::vec3(0.f, 0.f, -10.f);
-	this->userPlayerController->player.rotateY(180);
+	this->userPlayerController->player.position = glm::vec3(-10.f, 32.f, -10.f);
+	this->userPlayerController->player.rotateX(-30);
+	this->userPlayerController->player.rotateY(225);
 }
 
 SinglePlayerScreen::~SinglePlayerScreen() = default;
@@ -37,7 +38,7 @@ void SinglePlayerScreen::render(sf::Window& window)
 	// Get camera settings
 	Player& player = this->userPlayerController->player;
 	float cameraNear = 0.1f;
-	float cameraFar = 100.f;
+	float cameraFar = 512.f;
 	float cameraAspect = (float)window.getSize().x / window.getSize().y;
 	float cameraFov = glm::radians(this->gameSettings.fov);
 	float cameraRotX = glm::radians(player.getRotationX());

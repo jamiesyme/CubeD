@@ -37,12 +37,21 @@ void ChunkMeshSystem::render() const
 	glEnableClientState(GL_COLOR_ARRAY);
 
 	// Render each chunk mesh
+	const glm::ivec3 chunkSize = ChunkData::getSize();
+	const float blockSize = Block::getSize();
+	glm::vec3 chunkPos;
 	for (const auto& chunkMesh : this->chunkMeshes) {
+		chunkPos.x = chunkMesh->chunkX * chunkSize.x * blockSize;
+		chunkPos.y = chunkMesh->chunkY * chunkSize.y * blockSize;
+		chunkPos.z = chunkMesh->chunkZ * chunkSize.z * blockSize;
+
+		glTranslatef(chunkPos.x, chunkPos.y, chunkPos.z);
 		glBindBuffer(GL_ARRAY_BUFFER, chunkMesh->vertexVboId);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunkMesh->indexVboId);
 		glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, x));
 		glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, r));
 		glDrawElements(GL_TRIANGLES, chunkMesh->indexCount, GL_UNSIGNED_INT, 0);
+		glTranslatef(-chunkPos.x, -chunkPos.y, -chunkPos.z);
 	}
 
 	// Post-render
@@ -160,12 +169,12 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 				                                                           blockY + 1,
 				                                                           blockZ);
 
-				const float x1 = (float)x * blockSize;// + blockSize / 4;
-				const float x2 = (float)x * blockSize + blockSize;// * 3 / 4;
-				const float y1 = (float)y * blockSize;// + blockSize / 4;
-				const float y2 = (float)y * blockSize + blockSize;// * 3 / 4;
-				const float z1 = (float)z * blockSize;// + blockSize / 4;
-				const float z2 = (float)z * blockSize + blockSize;// * 3 / 4;
+				const float x1 = (float)x * blockSize;
+				const float x2 = (float)x * blockSize + blockSize;
+				const float y1 = (float)y * blockSize;
+				const float y2 = (float)y * blockSize + blockSize;
+				const float z1 = (float)z * blockSize;
+				const float z2 = (float)z * blockSize + blockSize;
 				uint32_t i;
 
 				if (x1BlockId == BlockId::Empty) {
