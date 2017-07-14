@@ -60,7 +60,7 @@ World::~World() = default;
 
 void World::generate()
 {
-	const glm::ivec3 size = {16, 4, 16};
+	const glm::ivec3 size = {6, 4, 6};
 	for (int32_t x = 0; x < size.x; ++x) {
 		for (int32_t z = 0; z < size.z; ++z) {
 			for (int32_t y = 0; y < size.y; ++y) {

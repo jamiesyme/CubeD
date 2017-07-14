@@ -3,6 +3,7 @@
 #include <SFML/OpenGL.hpp>
 
 #include "block.hpp"
+#include "block-database.hpp"
 #include "chunk-data.hpp"
 #include "chunk-data-system.hpp"
 #include "chunk-mesh.hpp"
@@ -131,6 +132,7 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 	const int64_t blockOffsetZ = chunkMesh.chunkZ * chunkSize.z;
 	const float blockSize = Block::getSize();
 	const ChunkDataSystem& chunkDataSystem = this->world.chunkDataSystem;
+	const BlockDatabase blockDb;
 
 	std::vector<Vertex> vertices;
 	std::vector<Triangle> triangles;
@@ -145,8 +147,7 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 				const BlockId centerBlockId = chunkDataSystem.getBlockId(blockX,
 				                                                         blockY,
 				                                                         blockZ);
-				if (centerBlockId == BlockId::Void ||
-				    centerBlockId == BlockId::Empty) {
+				if (!blockDb.isBlockVisible(centerBlockId)) {
 					continue;
 				}
 
@@ -169,6 +170,7 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 				                                                           blockY + 1,
 				                                                           blockZ);
 
+				const Color3 c = blockDb.getBlockColor(centerBlockId);
 				const float x1 = (float)x * blockSize;
 				const float x2 = (float)x * blockSize + blockSize;
 				const float y1 = (float)y * blockSize;
@@ -178,9 +180,9 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 				uint32_t i;
 
 				if (x1BlockId == BlockId::Empty) {
-					const unsigned char r = 180;
-					const unsigned char g = 180;
-					const unsigned char b = 180;
+					const unsigned char r = c.r - 40;
+					const unsigned char g = c.g - 40;
+					const unsigned char b = c.b - 40;
 					i = vertices.size();
 					vertices.push_back({x1, y1, z1, r, g, b});
 					vertices.push_back({x1, y1, z2, r, g, b});
@@ -190,9 +192,9 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 					triangles.push_back({i + 2, i + 3, i + 0});
 				}
 				if (x2BlockId == BlockId::Empty) {
-					const unsigned char r = 180;
-					const unsigned char g = 180;
-					const unsigned char b = 180;
+					const unsigned char r = c.r - 40;
+					const unsigned char g = c.g - 40;
+					const unsigned char b = c.b - 40;
 					i = vertices.size();
 					vertices.push_back({x2, y1, z2, r, g, b});
 					vertices.push_back({x2, y1, z1, r, g, b});
@@ -202,9 +204,9 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 					triangles.push_back({i + 2, i + 3, i + 0});
 				}
 				if (z1BlockId == BlockId::Empty) {
-					const unsigned char r = 210;
-					const unsigned char g = 210;
-					const unsigned char b = 210;
+					const unsigned char r = c.r - 20;
+					const unsigned char g = c.g - 20;
+					const unsigned char b = c.b - 20;
 					i = vertices.size();
 					vertices.push_back({x2, y1, z1, r, g, b});
 					vertices.push_back({x1, y1, z1, r, g, b});
@@ -214,9 +216,9 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 					triangles.push_back({i + 2, i + 3, i + 0});
 				}
 				if (z2BlockId == BlockId::Empty) {
-					const unsigned char r = 210;
-					const unsigned char g = 210;
-					const unsigned char b = 210;
+					const unsigned char r = c.r - 20;
+					const unsigned char g = c.g - 20;
+					const unsigned char b = c.b - 20;
 					i = vertices.size();
 					vertices.push_back({x1, y1, z2, r, g, b});
 					vertices.push_back({x2, y1, z2, r, g, b});
@@ -226,9 +228,9 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 					triangles.push_back({i + 2, i + 3, i + 0});
 				}
 				if (y1BlockId == BlockId::Empty) {
-					const unsigned char r = 240;
-					const unsigned char g = 240;
-					const unsigned char b = 240;
+					const unsigned char r = c.r;
+					const unsigned char g = c.g;
+					const unsigned char b = c.b;
 					i = vertices.size();
 					vertices.push_back({x2, y1, z2, r, g, b});
 					vertices.push_back({x1, y1, z2, r, g, b});
@@ -238,9 +240,9 @@ void ChunkMeshSystem::updateChunkMesh(const ChunkData& chunkData,
 					triangles.push_back({i + 2, i + 3, i + 0});
 				}
 				if (y2BlockId == BlockId::Empty) {
-					const unsigned char r = 240;
-					const unsigned char g = 240;
-					const unsigned char b = 240;
+					const unsigned char r = c.r;
+					const unsigned char g = c.g;
+					const unsigned char b = c.b;
 					i = vertices.size();
 					vertices.push_back({x2, y2, z1, r, g, b});
 					vertices.push_back({x1, y2, z1, r, g, b});
