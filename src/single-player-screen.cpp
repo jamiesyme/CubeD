@@ -5,6 +5,7 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/System/Time.hpp>
 
+#include "debug-overlay.hpp"
 #include "game.hpp"
 #include "player.hpp"
 #include "single-player-screen.hpp"
@@ -14,7 +15,8 @@
 SinglePlayerScreen::SinglePlayerScreen(GameSettings& gameSettings, World& world)
 	: gameSettings(gameSettings),
 	  world(world),
-	  userPlayerController(new UserPlayerController(world.createPlayer()))
+	  userPlayerController(new UserPlayerController(world.createPlayer())),
+	  debugOverlay(new DebugOverlay(world))
 {
 	this->userPlayerController->player.position = glm::vec3(-10.f, 32.f, -10.f);
 	this->userPlayerController->player.rotateX(-30);
@@ -33,7 +35,7 @@ void SinglePlayerScreen::tick(float deltaTime)
 	this->userPlayerController->tick(deltaTime);
 }
 
-void SinglePlayerScreen::render(sf::Window& window)
+void SinglePlayerScreen::render(sf::RenderWindow& window)
 {
 	// Get camera settings
 	Player& player = this->userPlayerController->player;
@@ -64,4 +66,10 @@ void SinglePlayerScreen::render(sf::Window& window)
 
 	// Render the world
 	this->world.render();
+
+	// Render the overlay on top
+	// TODO: I believe I originally intended this to be a separate screen
+	window.pushGLStates();
+	this->debugOverlay->render(window);
+	window.popGLStates();
 }

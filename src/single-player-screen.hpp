@@ -4,9 +4,10 @@
 
 namespace sf {
 	class Event;
-	class Window;
+	class RenderWindow;
 }
 
+class DebugOverlay;
 class GameSettings;
 class SystemEvent;
 class UserPlayerController;
@@ -22,10 +23,11 @@ public:
 
 	void tick(float deltaTime);
 
-	void render(sf::Window& window);
+	void render(sf::RenderWindow& window);
 
 private:
 	GameSettings& gameSettings;
 	World& world;
 	std::unique_ptr<UserPlayerController> userPlayerController;
+	std::unique_ptr<DebugOverlay> debugOverlay;
 };

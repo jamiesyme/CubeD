@@ -22,7 +22,5 @@ public:
 
 	ChunkDataSystem chunkDataSystem;
 	ChunkMeshSystem chunkMeshSystem;
-
-private:
 	std::vector<std::unique_ptr<Player>> players;
 };

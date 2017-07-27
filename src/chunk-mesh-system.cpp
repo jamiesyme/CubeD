@@ -114,6 +114,15 @@ void ChunkMeshSystem::updateChunkMesh(const int32_t chunkX,
 	}
 }
 
+uint32_t ChunkMeshSystem::getTriangleCount() const
+{
+	uint32_t triCount = 0;
+	for (const auto& chunkMesh : this->chunkMeshes) {
+		triCount += chunkMesh->indexCount / 3;
+	}
+	return triCount;
+}
+
 ChunkMeshSystem::ChunkMeshWithIndex::ChunkMeshWithIndex(const int32_t chunkX,
                                                         const int32_t chunkY,
                                                         const int32_t chunkZ)

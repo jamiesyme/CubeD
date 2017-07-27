@@ -6,6 +6,7 @@
 
 #include "chunk-mesh.hpp"
 
+class ChunkData;
 class World;
 
 class ChunkMeshSystem {
@@ -26,6 +27,8 @@ public:
 	                     const int32_t chunkY,
 	                     const int32_t chunkZ,
 	                     const ChunkData& chunkData);
+
+	uint32_t getTriangleCount() const;
 
 private:
 	class ChunkMeshWithIndex : public ChunkMesh {
